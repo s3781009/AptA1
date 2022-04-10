@@ -5,7 +5,6 @@
 NodeList::NodeList() { this->length = 0; }
 
 NodeList::NodeList(NodeList &other) {
-  std::cout << other.nodes[0]->getRow() << std::endl;
   this->nodes = new Node *[other.getLength()];
   for (int i = 0; i < other.length; ++i) {
     nodes[i] = new Node(other.get(i)->getRow(), other.get(i)->getCol(),
@@ -15,8 +14,8 @@ NodeList::NodeList(NodeList &other) {
 }
 
 NodeList::~NodeList() {
-    clear();
-    delete []nodes;
+  clear();
+  delete[] nodes;
 }
 
 int NodeList::getLength() { return this->length; }
@@ -24,11 +23,12 @@ int NodeList::getLength() { return this->length; }
 NodePtr NodeList::get(int i) { return this->nodes[i]; }
 
 void NodeList::addBack(NodePtr newNode) {
-    NodePtr  copyNode = new Node(newNode->getRow(),newNode->getCol(), newNode->getDistanceToS());
+  NodePtr copyNode =
+      new Node(newNode->getRow(), newNode->getCol(), newNode->getDistanceToS());
   this->nodes[length] = copyNode;
   length++; // after setting the node increment the length so the next node can
             // be added to the next index
-            //delete newNode;
+            // delete newNode;
 }
 
 bool NodeList::containsNode(NodePtr node) {

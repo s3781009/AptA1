@@ -17,40 +17,23 @@
 
 void printReachablePositions(Env env, NodeList *positions);
 
-// Read a environment from standard input.
-
 Env readEnvStdin(int *envRow, int *envCol);
-// Print out a Environment to standard output with path.
-// To be implemented for Milestone 3
+
 void printPath(Env env, NodeList *solution, int rows, int cols);
 
 int main(int argc, char **argv) {
 
-
-  // THESE ARE SOME EXAMPLE FUNCTIONS TO HELP TEST YOUR CODE
-  // AS YOU WORK ON MILESTONE 2. YOU CAN UPDATE THEM YOURSELF
-  // AS YOU GO ALONG.
-  // COMMENT THESE OUT BEFORE YOU SUBMIT!!!
-  //    std::cout << "TESTING - COMMENT THE OUT TESTING BEFORE YOU SUBMIT!!!" <<
-  //    std::endl; testNode(); testNodeList(); std::cout << "DONE TESTING" <<
-  //    std::endl << std::endl;
-
-  // Load Environment
-
-  int rows =0;
-  int cols =0;
+  int rows = 0;
+  int cols = 0;
+  // Load environment
   Env env = readEnvStdin(&rows, &cols);
-
-  // auto start = std::chrono::system_clock::now();
-  //  Some computation here
 
   // Solve using forwardSearch
   // THIS WILL ONLY WORK IF YOU'VE FINISHED MILESTONE 2
   PathPlanner *pathplanner = new PathPlanner(env, rows, cols);
-    NodeList* reachablePositions = nullptr;
- reachablePositions=  pathplanner->getReachableNodes();
+  NodeList *reachablePositions = nullptr;
+  reachablePositions = pathplanner->getReachableNodes();
   // printReachablePositions(env, reachablePositions);
-  //  Get the path
   //  THIS WILL ONLY WORK IF YOU'VE FINISHED MILESTONE 3
   NodeList *solution = pathplanner->getPath();
   // print the path
@@ -59,22 +42,19 @@ int main(int argc, char **argv) {
   delete reachablePositions;
   delete solution;
   delete_env(env, rows, cols);
-
 }
 
 Env readEnvStdin(int *envRow, int *envCol) {
 
-  std::cout << "enter a 20x20 maze " << std::endl;
-  //
   std::string totalString;
 
   std::string rowString;
   int rows = 0;
   int cols = 0;
-  char c= '\0';
+  char c;
   while (std::cin.get(c)) //
-      {
-    if (c == '\n' ) {
+  {
+    if (c == '\n') {
       totalString += rowString;
       rows++; // increment num of rows every new line
       if (rows == 1) {
@@ -94,21 +74,22 @@ Env readEnvStdin(int *envRow, int *envCol) {
       rowString += c;
     }
   }
-  totalString +=rowString;
+  totalString += rowString;
   rows++;
-  int startCount=0;
-  int endCount=0;
-    for (char i : totalString) {
-        if (i == SYMBOL_START ){
-            startCount++;
-        }
-        if (i == SYMBOL_EMPTY ){
-            endCount++;
-        }
+  int startCount = 0;
+  int endCount = 0;
+  // find if the number of goal and start node is 1, if not exit the program
+  for (char i : totalString) {
+    if (i == SYMBOL_START) {
+      startCount++;
     }
-    if (endCount > 1 || startCount > 1){
-        std::cout<<"more than one start or goal node detected"<<std::endl;
+    if (i == SYMBOL_GOAL) {
+      endCount++;
     }
+  }
+  if (endCount > 1 || startCount > 1) {
+    std::cout << "must have 1 start node and 1 goal node" << std::endl;
+  }
 
   *envRow = rows;
   *envCol = cols;
@@ -132,6 +113,7 @@ void printPath(Env env, NodeList *solution, int rows, int cols) {
     exit(1);
   }
   std::cout << "THE SOLUTION" << std::endl;
+
   /*loop through the env and assign arrows depnding on the position
    * of the next node
    */

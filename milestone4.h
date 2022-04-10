@@ -5,16 +5,16 @@
  *  memory for a generic 2D Environemnt.
  */
 Env make_env(const int rows, const int cols) {
-    Env env = nullptr;
+  Env env = nullptr;
 
-    if (rows >= 0 && cols >= 0) {
-        env = new char*[rows];
-        for (int i = 0; i != rows; ++i) {
-            env[i] = new char[cols];
-        }
+  if (rows >= 0 && cols >= 0) {
+    env = new char *[rows];
+    for (int i = 0; i != rows; ++i) {
+      env[i] = new char[cols];
     }
+  }
 
-    return env;
+  return env;
 }
 
 /*
@@ -22,11 +22,10 @@ Env make_env(const int rows, const int cols) {
  * dynamically allocated 2D Environment.
  */
 void delete_env(Env env, int rows, int cols) {
-    if (rows >= 0 && cols >= 0) {
-        for (int i = 0; i != rows; ++i) {
-            delete[] env[i];
-        }
-        delete[] env;
+  if (rows >= 0 && cols >= 0) {
+    for (int i = 0; i != rows; ++i) {
+      delete[] env[i];
     }
-
-    }
+    delete[] env;
+  }
+}
