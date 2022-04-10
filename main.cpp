@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 
 #include <chrono>
@@ -22,7 +23,6 @@ Env readEnvStdin(int *envRow, int *envCol);
 void printPath(Env env, NodeList *solution, int rows, int cols);
 
 int main(int argc, char **argv) {
-
   int rows = 0;
   int cols = 0;
   // Load environment
@@ -52,22 +52,21 @@ Env readEnvStdin(int *envRow, int *envCol) {
   int rows = 0;
   int cols = 0;
   char c;
-  while (std::cin.get(c)) //
-  {
-    if (c == '\n') {
+  while (std::cin.get(c)) {
+    if (c == '\n' ||std::cin.eof()) {
       totalString += rowString;
       rows++; // increment num of rows every new line
       if (rows == 1) {
         cols = (int)rowString.length();
       }
       if (cols != (int)rowString.length()) {
-        std::cout << "column lenghts do not match" << std::endl;
+        std::cout << "column lengths do not match" << std::endl;
         exit(0);
       }
       rowString = ""; // reset the chars in the row as new line is reached
     } else if (c != SYMBOL_EMPTY && c != SYMBOL_GOAL && c != SYMBOL_WALL &&
                c != SYMBOL_START) {
-      std::cout << "invalid char detected " << std::endl;
+      std::cout << "invalid char detected" << std::endl;
       exit(0);
     } else if (c != '\n') {
       // if the char is a valid char and not a new line add c to the row
@@ -87,8 +86,9 @@ Env readEnvStdin(int *envRow, int *envCol) {
       endCount++;
     }
   }
-  if (endCount > 1 || startCount > 1) {
+  if (endCount != 1 || startCount != 1) {
     std::cout << "must have 1 start node and 1 goal node" << std::endl;
+    exit(0);
   }
 
   *envRow = rows;
@@ -110,7 +110,7 @@ void printPath(Env env, NodeList *solution, int rows, int cols) {
    */
   if (solution->getLength() == 1) {
     std::cout << "cannot find path" << std::endl;
-    exit(1);
+    exit(0);
   }
   std::cout << "THE SOLUTION" << std::endl;
 

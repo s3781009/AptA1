@@ -8,7 +8,7 @@ class NodeList {
 public:
 
    /*                                           */
-   /* DO NOT MOFIFY ANY CODE IN THIS SECTION    */
+   /* DO NOT MODIFY ANY CODE IN THIS SECTION    */
    /*                                           */
 
    // Create a New Empty List

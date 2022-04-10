@@ -3,7 +3,7 @@
 #include <iostream>
 #include <queue>
 
-// To intialize a path planner the goal and start node must be intalized
+// To initialize a path planner the goal and start node must be intalized
 //  for a path to be generated
 PathPlanner::PathPlanner(Env env, int rows, int cols) {
   this->env = env;

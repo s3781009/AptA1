@@ -10,7 +10,7 @@ class PathPlanner
 {
 public:
     /*                                           */
-    /* DO NOT MOFIFY ANY CODE IN THIS SECTION    */
+    /* DO NOT MODIFY ANY CODE IN THIS SECTION    */
     /*                                           */
 
     // Initialise with a given Env of size (rows,cols)
