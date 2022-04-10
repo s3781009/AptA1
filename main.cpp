@@ -22,7 +22,8 @@ Env readEnvStdin(int *envRow, int *envCol);
 
 void printPath(Env env, NodeList *solution, int rows, int cols);
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int rows = 0;
   int cols = 0;
   // Load environment
@@ -44,7 +45,8 @@ int main(int argc, char **argv) {
   delete_env(env, rows, cols);
 }
 
-Env readEnvStdin(int *envRow, int *envCol) {
+Env readEnvStdin(int *envRow, int *envCol)
+{
 
   std::string totalString;
 
@@ -52,23 +54,31 @@ Env readEnvStdin(int *envRow, int *envCol) {
   int rows = 0;
   int cols = 0;
   char c;
-  while (std::cin.get(c)) {
-    if (c == '\n' ||std::cin.eof()) {
+  while (std::cin.get(c))
+  {
+    if (c == '\n' || std::cin.eof())
+    {
       totalString += rowString;
       rows++; // increment num of rows every new line
-      if (rows == 1) {
+      if (rows == 1)
+      {
         cols = (int)rowString.length();
       }
-      if (cols != (int)rowString.length()) {
+      if (cols != (int)rowString.length())
+      {
         std::cout << "column lengths do not match" << std::endl;
         exit(0);
       }
       rowString = ""; // reset the chars in the row as new line is reached
-    } else if (c != SYMBOL_EMPTY && c != SYMBOL_GOAL && c != SYMBOL_WALL &&
-               c != SYMBOL_START) {
+    }
+    else if (c != SYMBOL_EMPTY && c != SYMBOL_GOAL && c != SYMBOL_WALL &&
+             c != SYMBOL_START)
+    {
       std::cout << "invalid char detected" << std::endl;
       exit(0);
-    } else if (c != '\n') {
+    }
+    else if (c != '\n')
+    {
       // if the char is a valid char and not a new line add c to the row
       rowString += c;
     }
@@ -78,15 +88,19 @@ Env readEnvStdin(int *envRow, int *envCol) {
   int startCount = 0;
   int endCount = 0;
   // find if the number of goal and start node is 1, if not exit the program
-  for (char i : totalString) {
-    if (i == SYMBOL_START) {
+  for (char i : totalString)
+  {
+    if (i == SYMBOL_START)
+    {
       startCount++;
     }
-    if (i == SYMBOL_GOAL) {
+    if (i == SYMBOL_GOAL)
+    {
       endCount++;
     }
   }
-  if (endCount != 1 || startCount != 1) {
+  if (endCount != 1 || startCount != 1)
+  {
     std::cout << "must have 1 start node and 1 goal node" << std::endl;
     exit(0);
   }
@@ -95,8 +109,11 @@ Env readEnvStdin(int *envRow, int *envCol) {
   *envCol = cols;
   Env env = make_env(*envRow, cols);
   int index = 0;
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
+  // set the rows and columns on the environment
+  for (int i = 0; i < rows; i++)
+  {
+    for (int j = 0; j < cols; j++)
+    {
       env[i][j] = totalString[index];
       index++;
     }
@@ -104,52 +121,63 @@ Env readEnvStdin(int *envRow, int *envCol) {
   return env;
 }
 
-void printPath(Env env, NodeList *solution, int rows, int cols) {
-  /* if length of solutiion node list is 1 then that means
+void printPath(Env env, NodeList *solution, int rows, int cols)
+{
+  /* if length of solution node list is 1 then that means
    * it only containst the start node therefore there is no path
    */
-  if (solution->getLength() == 1) {
+  if (solution->getLength() == 1)
+  {
     std::cout << "cannot find path" << std::endl;
     exit(0);
   }
   std::cout << "THE SOLUTION" << std::endl;
 
-  /*loop through the env and assign arrows depnding on the position
+  /*loop through the env and assign arrows depending on the position
    * of the next node
    */
-  for (int i = 1; i < solution->getLength(); ++i) {
+  for (int i = 1; i < solution->getLength(); ++i)
+  {
     NodePtr prevNode = solution->get(i - 1);
     NodePtr curNode = solution->get(i);
 
     if ((prevNode->getRow() + 1 == curNode->getRow()) &&
-        (prevNode->getCol() == curNode->getCol())) {
+        (prevNode->getCol() == curNode->getCol()))
+    {
       env[prevNode->getRow()][prevNode->getCol()] = 'v';
     }
     if ((prevNode->getRow() - 1 == curNode->getRow()) &&
-        (prevNode->getCol() == curNode->getCol())) {
+        (prevNode->getCol() == curNode->getCol()))
+    {
       env[prevNode->getRow()][prevNode->getCol()] = '^';
     }
     if ((prevNode->getRow() == curNode->getRow()) &&
-        (prevNode->getCol() + 1 == curNode->getCol())) {
+        (prevNode->getCol() + 1 == curNode->getCol()))
+    {
       env[prevNode->getRow()][prevNode->getCol()] = '>';
     }
     if ((prevNode->getRow() == curNode->getRow()) &&
-        (prevNode->getCol() - 1 == curNode->getCol())) {
+        (prevNode->getCol() - 1 == curNode->getCol()))
+    {
       env[prevNode->getRow()][prevNode->getCol()] = '<';
     }
   }
   // print the solution/path
-  for (int i = 0; i < rows; ++i) {
-    for (int j = 0; j < cols; ++j) {
+  for (int i = 0; i < rows; ++i)
+  {
+    for (int j = 0; j < cols; ++j)
+    {
       std::cout << env[i][j];
     }
     std::cout << std::endl;
   }
 }
 
-void printReachablePositions(Env env, NodeList *reachablePositions) {
+void printReachablePositions(Env env, NodeList *reachablePositions)
+{
   // loop through reachable positions and print all nodes as string
-  for (int i = 0; i < reachablePositions->getLength(); ++i) {
+  for (int i = 0; i < reachablePositions->getLength(); ++i)
+  {
     std::cout << "row: " << reachablePositions->get(i)->getRow();
     std::cout << std::setw(10)
               << "col: " << reachablePositions->get(i)->getCol();
@@ -159,7 +187,8 @@ void printReachablePositions(Env env, NodeList *reachablePositions) {
   }
 }
 
-void testNode() {
+void testNode()
+{
   std::cout << "TESTING Node" << std::endl;
 
   // Make a Node and print out the contents
@@ -177,7 +206,8 @@ void testNode() {
   delete node;
 }
 
-void testNodeList() {
+void testNodeList()
+{
   std::cout << "TESTING NodeList" << std::endl;
 
   // Make a simple NodeList, should be empty size
@@ -203,7 +233,8 @@ void testNodeList() {
   // Print out the NodeList
   std::cout << "PRINTING OUT A NODELIST IS AN EXERCISE FOR YOU TO DO"
             << std::endl;
-  for (int i = 0; i < nodeList->getLength(); ++i) {
+  for (int i = 0; i < nodeList->getLength(); ++i)
+  {
     Node *nodeP = nodeList->get(i);
     std::cout << nodeP->getRow() << ",";
     std::cout << nodeP->getCol() << ",";

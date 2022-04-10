@@ -3,19 +3,24 @@
 #include <iostream>
 #include <queue>
 
-// To initialize a path planner the goal and start node must be intalized
+// To initialize a path planner the goal and start node must be intialized
 //  for a path to be generated
-PathPlanner::PathPlanner(Env env, int rows, int cols) {
+PathPlanner::PathPlanner(Env env, int rows, int cols)
+{
   this->env = env;
   this->maxSize = rows * cols;
-  for (int i = 0; i < rows; ++i) {
-    for (int j = 0; j < cols; ++j) {
+  for (int i = 0; i < rows; ++i)
+  {
+    for (int j = 0; j < cols; ++j)
+    {
       this->env[i][j] = env[i][j];
-      if (env[i][j] == SYMBOL_START) {
+      if (env[i][j] == SYMBOL_START)
+      {
         // call this function to set starting position
         initialPosition(i, j);
       }
-      if (this->env[i][j] == SYMBOL_GOAL) {
+      if (this->env[i][j] == SYMBOL_GOAL)
+      {
         /* set goal node with row and cols , distance from from start
          * is uknown so it will be set when path is caluclated
          */
@@ -25,7 +30,8 @@ PathPlanner::PathPlanner(Env env, int rows, int cols) {
   }
 }
 
-PathPlanner::~PathPlanner() {
+PathPlanner::~PathPlanner()
+{
   delete reachableNodes;
   delete initPos;
   delete goal;
@@ -33,21 +39,29 @@ PathPlanner::~PathPlanner() {
   goal = nullptr;
 }
 
-void PathPlanner::initialPosition(int row, int col) {
+void PathPlanner::initialPosition(int row, int col)
+{
   this->initPos = new Node(row, col, 0);
 }
 
-NodeList *PathPlanner::getReachableNodes() {
+NodeList *PathPlanner::getReachableNodes()
+{
+  // o list is will contain reachable nodes
   NodeList o;
   o.setMaxSize(maxSize);
   o.addBack(this->initPos);
+  // c list contains the nodes that have already been visited
   NodeList c;
-  c.setMaxSize(maxSize); // closed list
-  NodePtr p = o.get(0);  // assign pointer to start position
+  c.setMaxSize(maxSize);
+  // assign pointer to start position
+  NodePtr p = o.get(0);
+  // dist from start node for further nodes to be added
   int dist = 1;
-  bool stop = false;
-  while (!stop) {
-    stop = true;
+  bool allNodesFounds = false;
+
+  while (!allNodesFounds)
+  {
+    allNodesFounds = true;
     char pDown = env[p->getRow() + 1][p->getCol()];
     char pUp = env[p->getRow() - 1][p->getCol()];
     char pRight = env[p->getRow()][p->getCol() + 1];
@@ -56,25 +70,36 @@ NodeList *PathPlanner::getReachableNodes() {
     NodePtr neighborRight = new Node(p->getRow(), p->getCol() + 1, dist);
     NodePtr neighborDown = new Node(p->getRow() + 1, p->getCol(), dist);
     NodePtr neighborLeft = new Node(p->getRow(), p->getCol() - 1, dist);
-    if (pUp == SYMBOL_EMPTY && !o.containsNode(neighborUp)) {
+    /* The robot moves up -> right -> down -> left and looks for reachable nodes
+     * keeps looping until all nodes that have been added
+     */
+    if (pUp == SYMBOL_EMPTY && !o.containsNode(neighborUp))
+    {
       o.addBack(neighborUp);
     }
-    if (pRight == SYMBOL_EMPTY && !o.containsNode(neighborRight)) {
+    if (pRight == SYMBOL_EMPTY && !o.containsNode(neighborRight))
+    {
       o.addBack(neighborRight);
     }
-    if (pDown == SYMBOL_EMPTY && !o.containsNode(neighborDown)) {
+    if (pDown == SYMBOL_EMPTY && !o.containsNode(neighborDown))
+    {
       o.addBack(neighborDown);
     }
-    if (pLeft == SYMBOL_EMPTY && !o.containsNode(neighborLeft)) {
+    if (pLeft == SYMBOL_EMPTY && !o.containsNode(neighborLeft))
+    {
       o.addBack(neighborLeft);
     }
     dist++;
     NodePtr pNode = new Node(p->getRow(), p->getCol(), p->getDistanceToS());
+    // add the current position to the c list as it is now reached
     c.addBack(pNode);
-    for (int i = 0; i < o.getLength(); ++i) {
-      if (!c.containsNode(o.get(i))) {
+    for (int i = 0; i < o.getLength(); ++i)
+    {
+      // if there is a node in o list that is not in c list then all nodes are not yet found
+      if (!c.containsNode(o.get(i)))
+      {
         p = o.get(i);
-        stop = false;
+        allNodesFounds = false;
       }
     }
     delete pNode;
@@ -83,16 +108,14 @@ NodeList *PathPlanner::getReachableNodes() {
     delete neighborRight;
     delete neighborUp;
   }
-  /*
-   *invoking copy constructor on open list, because open list members
-   *will be freed when exiting this scope
-   */
+
   this->reachableNodes = new NodeList(o);
   NodeList *copy = new NodeList(o);
   return copy;
 }
 
-NodeList *PathPlanner::getPath() {
+NodeList *PathPlanner::getPath()
+{
   NodeList backwardPath;
   backwardPath.setMaxSize(maxSize);
 
@@ -101,28 +124,34 @@ NodeList *PathPlanner::getPath() {
 
   // start end of node list and loop until first position away from start is
   // reached
-  for (int i = reachableNodes->getLength() - 1; i > 0; --i) {
+  for (int i = reachableNodes->getLength() - 1; i > 0; --i)
+  {
+    // if the next node is adjacent to the current node then add it to the backwardpath
 
     if ((reachableNodes->get(i)->getRow() + 1 == currentNode->getRow()) &&
-        (reachableNodes->get(i)->getCol() == currentNode->getCol())) {
+        (reachableNodes->get(i)->getCol() == currentNode->getCol()))
+    {
       this->goal->setDistanceToS(reachableNodes->get(i)->getDistanceToS() + 1);
       currentNode = reachableNodes->get(i);
       backwardPath.addBack(currentNode);
     }
     if ((reachableNodes->get(i)->getRow() == currentNode->getRow()) &&
-        (reachableNodes->get(i)->getCol() - 1 == currentNode->getCol())) {
+        (reachableNodes->get(i)->getCol() - 1 == currentNode->getCol()))
+    {
       this->goal->setDistanceToS(reachableNodes->get(i)->getDistanceToS() + 1);
       currentNode = reachableNodes->get(i);
       backwardPath.addBack(currentNode);
     }
     if ((reachableNodes->get(i)->getRow() - 1 == currentNode->getRow()) &&
-        (reachableNodes->get(i)->getCol() == currentNode->getCol())) {
+        (reachableNodes->get(i)->getCol() == currentNode->getCol()))
+    {
       this->goal->setDistanceToS(reachableNodes->get(i)->getDistanceToS() + 1);
       currentNode = reachableNodes->get(i);
       backwardPath.addBack(currentNode);
     }
     if ((reachableNodes->get(i)->getRow() == currentNode->getRow()) &&
-        (reachableNodes->get(i)->getCol() + 1 == currentNode->getCol())) {
+        (reachableNodes->get(i)->getCol() + 1 == currentNode->getCol()))
+    {
       this->goal->setDistanceToS(reachableNodes->get(i)->getDistanceToS() + 1);
       currentNode = reachableNodes->get(i);
       backwardPath.addBack(currentNode);
@@ -130,7 +159,9 @@ NodeList *PathPlanner::getPath() {
   }
   NodeList *forwardPath = new NodeList();
   forwardPath->setMaxSize(backwardPath.getLength());
-  for (int i = backwardPath.getLength() - 1; i >= 0; --i) {
+  //reverse the backward path to obtain the forward path
+  for (int i = backwardPath.getLength() - 1; i >= 0; --i)
+  {
     NodePtr node =
         new Node(backwardPath.get(i)->getRow(), backwardPath.get(i)->getCol(),
                  backwardPath.get(i)->getDistanceToS());
